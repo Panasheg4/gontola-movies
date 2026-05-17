@@ -101,13 +101,15 @@ def fetch_upcoming_movies():
     print("Fetching upcoming movies...")
     from datetime import date, timedelta
     today = str(date.today())
-    six_months = str(date.today() + timedelta(days=180))
+    five_months = str(date.today() + timedelta(days=150))
     count = 0
 
-    for page in range(1, 8):
+    for page in range(1, 15):
         response = requests.get(
             f"{BASE_URL}/movie/upcoming"
-            f"?api_key={API_KEY}&include_adult=false&page={page}",
+            f"?api_key={API_KEY}"
+            f"&include_adult=false"
+            f"&page={page}",
             headers=headers,
             timeout=10
         )
@@ -119,11 +121,11 @@ def fetch_upcoming_movies():
                 continue
             if is_blocked_movie(movie):
                 continue
-            if not movie["release_date"]:
+            if not movie.get("release_date"):
                 continue
             if movie["release_date"] <= today:
                 continue
-            if movie["release_date"] > six_months:
+            if movie["release_date"] > five_months:
                 continue
             clean_movie = {
                 "id": movie["id"],
@@ -139,15 +141,17 @@ def fetch_upcoming_movies():
                 ),
                 "release_date": movie["release_date"],
                 "genre_ids": ",".join(
-                    str(gid) for gid in movie["genre_ids"]
+                    str(gid) for gid in
+                    movie.get("genre_ids", [])
                 ),
                 "genre_names": get_genre_names(
-                    movie["genre_ids"]
+                    movie.get("genre_ids", [])
                 ),
                 "is_true_story": False
             }
             save_movie(clean_movie, is_upcoming=True)
             count += 1
+        print(f"Upcoming page {page} done...")
     print(f"Saved {count} upcoming movies!")
 
 def fix_upcoming_flags():
@@ -467,4 +471,4 @@ def run_all(full_refresh=False):
         print("All done!")
 
 # Change this line at the very bottom:
-run_all(full_refresh=True)
+run_all(full_refresh=False)

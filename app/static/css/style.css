@@ -622,7 +622,17 @@ img {
 
 /* Small mobile — poster only, NO content */
 @media (max-width: 480px) {
-    .hero-banner { height: 220px; }
+    /* Increased height from 220px to 270px to allocate title space safely */
+    .hero-banner { 
+        height: 250px !important; 
+    }
+
+    /* Force the slides to use your local fallback banner image file */
+    .hero-slide {
+        background-image: url('/static/images/banner.jpg') !important;
+        background-size: cover;
+        background-position: center;
+    }
 
     .hero-content-wrapper {
         padding: 12px;
@@ -630,28 +640,61 @@ img {
         gap: 0;
     }
 
-    .hero-text-side { display: none; }
+    /* Keep hiding standard desktop text panel layout */
+    .hero-text-side { 
+        display: none !important; 
+    }
 
+    /* Align elements vertically inside the poster side panel container */
     .hero-poster-side {
         flex: 1;
+        display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin-top: 20px;
+        gap: 8px; /* Adds space between the bottom of poster and top of title */
     }
 
     .hero-poster-img {
         width: 110px;
         height: 165px;
         margin: 0 auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Styling for the mobile title built right under the poster image framework */
+    .hero-mobile-title {
+        display: block !important;
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 0;
+        padding: 0 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 280px;
     }
 
     .hero-arrow {
-        width: 26px; height: 26px;
+        width: 26px; 
+        height: 26px;
         font-size: 11px;
     }
 
     .hero-arrow-left  { left: 6px; }
     .hero-arrow-right { right: 6px; }
     .hero-controls { bottom: 8px; }
+}
+
+/* Ensure the mobile title remains hidden on wider laptop and tablet screens */
+@media (min-width: 481px) {
+    .hero-mobile-title {
+        display: none !important;
+    }
 }
 
 /*Section 5 — Category Cards*/
@@ -4806,3 +4849,31 @@ img {
 .detail-director strong {
     color: #ffffff;
 }
+
+@media (max-width: 768px) {
+    .detail-overview {
+        font-size: 13px;
+        text-align: justify;
+    }
+
+    .detail-director {
+        margin: 0 auto;
+        width: fit-content;
+        text-align: center;
+    }
+
+    .detail-meta-row {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .detail-tagline {
+        text-align: center;
+    }
+
+    /* Age rating missing - show nothing cleanly */
+    .detail-meta-chip:empty {
+        display: none;
+    }
+}
+

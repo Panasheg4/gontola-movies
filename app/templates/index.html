@@ -13,20 +13,23 @@
             <div class="hero-gradient"></div>
             <div class="hero-overlay">
                 <div class="hero-content-wrapper">
+                    
                     <div class="hero-poster-side">
                         <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
                              alt="{{ movie.title }}"
                              class="hero-poster-img"
                              onerror="this.src=this.dataset.fallback"
                              data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                        
+                        <!-- NEW: Mobile-only Title directly below the poster image container -->
+                        <h2 class="hero-mobile-title">{{ movie.title }}</h2>
                     </div>
+                    
                     <div class="hero-text-side">
                         <h1 class="hero-title">
                             {{ movie.title }}
                             {% if movie.release_date %}
-                            <span class="hero-title-year">
-                                ({{ movie.release_date[:4] }})
-                            </span>
+                            <span class="hero-title-year">({{ movie.release_date[:4] }})</span>
                             {% endif %}
                         </h1>
                         <p class="hero-meta">{{ movie.genre_names }}</p>
@@ -35,20 +38,20 @@
                         </p>
                         <div class="hero-bottom-row">
                             <div class="hero-rating-inline">
-                                <span class="hero-rating-number">
-                                    {{ movie.vote_average | round(1) }}
-                                </span>
+                                <span class="hero-rating-number">{{ movie.vote_average | round(1) }}</span>
                                 <span class="hero-rating-label">/ 10</span>
                             </div>
                             <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
                                class="hero-btn-primary">More Info</a>
                         </div>
                     </div>
+
                 </div>
             </div>
         </article>
         {% endfor %}
     </div>
+    
     {% if hero_candidates|length > 1 %}
     <div class="hero-controls">
         <div class="hero-dots">
@@ -67,6 +70,7 @@
         <i class="fa-solid fa-chevron-right"></i>
     </button>
     {% endif %}
+    
     {% else %}
     <div class="hero-fallback">
         <img src="{{ url_for('static', filename='images/banner.jpg') }}"

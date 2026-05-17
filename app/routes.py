@@ -18,7 +18,7 @@ def index():
     hero_candidates = Movie.query.filter(
         Movie.is_upcoming == False,
         Movie.vote_average >= 6.5,
-        Movie.release_date >= one_year_ago,
+        Movie.release_date >= four_months_ago,
         Movie.poster_path != "",
         Movie.poster_path.isnot(None),
         Movie.backdrop_path != "",
@@ -27,6 +27,21 @@ def index():
         Movie.vote_average.desc(),
         Movie.release_date.desc()
     ).limit(10).all()
+
+    # Fallback if not enough recent movies
+    if len(hero_candidates) < 5:
+        hero_candidates = Movie.query.filter(
+            Movie.is_upcoming == False,
+            Movie.vote_average >= 6.0,
+            Movie.release_date >= one_year_ago,
+            Movie.poster_path != "",
+            Movie.poster_path.isnot(None),
+            Movie.backdrop_path != "",
+            Movie.backdrop_path.isnot(None)
+        ).order_by(
+            Movie.vote_average.desc(),
+            Movie.release_date.desc()
+        ).limit(10).all()
 
     featured = hero_candidates[0] if hero_candidates else None
 
@@ -567,7 +582,6 @@ def shorts_page():
         hide_search=True,
         format_number=format_number
     )
-
 
 @main.route("/true-stories")
 def true_stories():
