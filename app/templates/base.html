@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gontola Movies — Your ultimate destination for everything movies. Top 10 rankings, true stories, action films, and must-watch recommendations. Updated daily.">
+    <meta name="keywords" content="gontola movies, top 10 movies, based on true stories movies, best action movies 2026, movie recommendations, upcoming movies 2026, must watch movies">
+    <meta name="author" content="Gontola Movies">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Gontola Movies">
+    <meta property="og:description" content="Your ultimate destination for everything movies. Top 10 rankings, true stories, action and must-watch recommendations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gontolamovies.com">
+
+    <link rel="canonical" href="https://gontolamovies.com">
+
+    <title>{% block title %}Gontola Movies{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="Gontola Movies"
+                 class="logo-img">
+            <span class="nav-brand">
+                Gontola <strong>Movies</strong>
+            </span>
+        </div>
+
+        <button class="hamburger" id="hamburger"
+                aria-label="Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="nav-links" id="nav-links">
+            <a href="{{ url_for('main.index') }}"
+               class="{% if request.endpoint == 'main.index' %}active{% endif %}">
+                Home
+            </a>
+            <div class="dropdown">
+                <button class="dropdown-btn">
+                    Genre
+                    <i class="fa-solid fa-chevron-down"
+                       style="font-size:10px"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('main.true_stories') }}"
+                       class="dropdown-item">
+                        True Stories
+                    </a>
+                    <a href="{{ url_for('main.genre', genre_name='action') }}"
+                       class="dropdown-item">Action</a>
+                    <a href="{{ url_for('main.genre', genre_name='adventure') }}"
+                       class="dropdown-item">Adventure</a>
+                    <a href="{{ url_for('main.genre', genre_name='drama') }}"
+                       class="dropdown-item">Drama</a>
+                    <a href="{{ url_for('main.genre', genre_name='science-fiction') }}"
+                       class="dropdown-item">
+                        Sci-Fi
+                    </a>
+                    <a href="{{ url_for('main.genre', genre_name='comedy') }}"
+                       class="dropdown-item">Comedy</a>
+                    <a href="{{ url_for('main.genre', genre_name='thriller') }}"
+                       class="dropdown-item">Thriller</a>
+                    <a href="{{ url_for('main.genre', genre_name='animation') }}"
+                       class="dropdown-item">Animation</a>
+                </div>
+            </div>
+            <a href="{{ url_for('main.about') }}">About</a>
+        </div>
+    </div>
+
+    {% if not hide_search %}
+    <div class="search-and-cats" id="search-cats">
+        <div class="search-bar">
+            <div class="search-wrapper">
+                <form action="{{ url_for('main.search') }}"
+                      method="GET"
+                      id="search-form">
+                    <input type="text"
+                           name="q"
+                           id="search-input"
+                           class="search-input"
+                           placeholder="Search movies..."
+                           autocomplete="off">
+                    <button type="submit"
+                            class="search-btn">
+                        Search
+                    </button>
+                </form>
+                <div class="search-dropdown"
+                     id="search-dropdown"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if request.endpoint == 'main.index' %}
+        <div class="category-cards">
+            <a href="#shorts" class="cat-card">
+                <i class="fa-brands fa-youtube cat-icon"></i>
+                <span class="cat-name">Shorts</span>
+            </a>
+            <a href="#recommended" class="cat-card">
+                <i class="fa-solid fa-book cat-icon"></i>
+                <span class="cat-name">Recommended</span>
+            </a>
+            <a href="#latest" class="cat-card">
+                <i class="fa-solid fa-clapperboard cat-icon"></i>
+                <span class="cat-name">Latest</span>
+            </a>
+            <a href="#upcoming" class="cat-card">
+                <i class="fa-solid fa-calendar-days cat-icon"></i>
+                <span class="cat-name">Upcoming</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</nav>
+
+<main class="main-content">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-main">
+            <div class="footer-brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}"
+                     alt="Gontola Movies"
+                     class="footer-logo-img">
+                <div class="footer-brand-text">
+                    <h3>Gontola Movies</h3>
+                    <p>Your ultimate destination for
+                    everything movies. From Top 10 rankings,
+                    iconic movie scenes, and must-watch
+                    recommendations — all in one place.</p>
+                </div>
+            </div>
+
+            <div class="footer-community">
+                <a href="https://youtube.com/@Gontolamovies"
+                   target="_blank"
+                   class="footer-yt-btn">
+                    <i class="fa-brands fa-youtube"></i>
+                    Join our YouTube Community
+                </a>
+                {% if channel_stats %}
+                <div class="footer-yt-stats">
+                    <div class="footer-yt-stat">
+                        <div class="footer-yt-stat-num">
+                            {{ channel_stats.subscribers | format_number }}
+                        </div>
+                        <div class="footer-yt-stat-lbl">
+                            Subscribers
+                        </div>
+                    </div>
+                    <div class="footer-yt-stat">
+                        <div class="footer-yt-stat-num">
+                            {{ channel_stats.views | format_number }}
+                        </div>
+                        <div class="footer-yt-stat-lbl">
+                            Total Views
+                        </div>
+                    </div>
+                    <div class="footer-yt-stat">
+                        <div class="footer-yt-stat-num">
+                            {{ channel_stats.videos }}
+                        </div>
+                        <div class="footer-yt-stat-lbl">
+                            Videos
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-row">
+                <div class="footer-copy">
+                    © 2026 Gontola Movies · All rights reserved
+                </div>
+                <div class="footer-tmdb-center">
+                    Movie data provided by
+                    <a href="https://www.themoviedb.org"
+                       target="_blank">TMDB</a>
+                </div>
+                <div class="footer-status">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span class="status-text" id="status-text">
+                        All systems operational
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

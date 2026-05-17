@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="movie-list-wrapper">
+
+    <div class="movie-list-header">
+        <a href="{{ url_for('main.index') }}" class="detail-back-top">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+        <h1 class="movie-list-title">{{ title }}</h1>
+        <div class="movie-list-divider"></div>
+    </div>
+
+    {% if movies.items %}
+    <div class="movies-grid">
+        {% for movie in movies.items %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+                     data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">
+                    {{ movie.vote_average | round(1) }}
+                </div>
+                {% if movie.is_upcoming %}
+                <div class="new-badge upcoming-badge">UPCOMING</div>
+                {% elif movie.release_date >= four_weeks_ago %}
+                <div class="new-badge">NEW</div>
+                {% endif %}
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">{{ movie.release_date | format_date }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if movies.has_prev %}
+        <a href="{{ url_for(request.endpoint, page=movies.prev_num) }}"
+           class="page-btn">
+            <i class="fa-solid fa-arrow-left"></i> Prev
+        </a>
+        {% endif %}
+
+        {% for num in movies.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if num %}
+                {% if num == movies.page %}
+                <span class="page-btn active">{{ num }}</span>
+                {% else %}
+                <a href="{{ url_for(request.endpoint, page=num) }}"
+                   class="page-btn">{{ num }}</a>
+                {% endif %}
+            {% else %}
+            <span class="page-dots">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if movies.has_next %}
+        <a href="{{ url_for(request.endpoint, page=movies.next_num) }}"
+           class="page-btn">
+            Next <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <p class="no-movies">No movies found right now.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

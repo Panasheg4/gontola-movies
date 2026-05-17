@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Search "{{ query }}" — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="movie-list-wrapper">
+
+    <div class="movie-list-header">
+        <a href="{{ url_for('main.index') }}" class="detail-back-top">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+        <h1 class="movie-list-title">
+            {% if query %}
+                Search results for "{{ query }}"
+            {% else %}
+                Search Movies
+            {% endif %}
+        </h1>
+        <div class="movie-list-divider"></div>
+    </div>
+
+    {% if query %}
+        {% if results %}
+        <div class="search-results-count">
+            <i class="fa-solid fa-film"></i>
+            {{ results|length }} result{{ 's' if results|length != 1 }} found
+        </div>
+        <div class="movies-grid">
+            {% for movie in results %}
+            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+               class="movie-card">
+                <div class="poster-wrapper">
+                    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                         alt="{{ movie.title }}"
+                         class="movie-poster"
+                         onerror="this.src=this.dataset.fallback"
+                         data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                    <div class="rating-badge">
+                        {{ movie.vote_average | round(1) }}
+                    </div>
+                    {% if movie.is_upcoming %}
+                    <div class="new-badge upcoming-badge">
+                        UPCOMING
+                    </div>
+                    {% elif movie.release_date >= four_weeks_ago %}
+                    <div class="new-badge">NEW</div>
+                    {% endif %}
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">{{ movie.title }}</h3>
+                    <p class="card-genre">{{ movie.genre_names }}</p>
+                    <p class="card-year">{{ movie.release_date | format_date }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="search-empty">
+            <i class="fa-solid fa-magnifying-glass search-empty-icon"></i>
+            <h2>No results for "{{ query }}"</h2>
+            <p>Try a different title, genre or actor name</p>
+            <a href="{{ url_for('main.index') }}"
+               class="hero-btn-primary" style="display:inline-block;margin-top:16px">
+               Back to Home
+            </a>
+        </div>
+        {% endif %}
+
+    {% else %}
+    <div class="search-empty">
+        <i class="fa-solid fa-magnifying-glass search-empty-icon"></i>
+        <h2>What are you looking for?</h2>
+        <p>Type a movie title in the search bar above</p>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="movie-detail-wrapper">
+
+    <a href="{{ url_for('main.index') }}" class="detail-back-top">← Back</a>
+
+    <div class="movie-detail-hero">
+        <div class="movie-detail-bg">
+            <img src="https://image.tmdb.org/t/p/w1280{{ movie.backdrop_path or movie.poster_path }}"
+                 alt=""
+                 class="movie-detail-bg-img"
+                 onerror="this.style.display='none'"
+                 >
+            <div class="movie-detail-bg-overlay"></div>
+        </div>
+
+        <div class="movie-detail-content">
+            <div class="movie-detail-poster-side">
+                <img src="https://image.tmdb.org/t/p/w400{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-detail-poster"
+                     onerror="this.src=this.dataset.fallback"
+                     data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+            </div>
+
+            <div class="movie-detail-info-side">
+            
+                <h1 class="detail-title">
+                    {{ movie.title }}
+                    {% if movie.release_date %}
+                    <span class="detail-title-year">
+                        ({{ movie.release_date[:4] }})
+                    </span>
+                    {% endif %}
+                </h1>
+            
+                {% if tagline %}
+                <p class="detail-tagline">"{{ tagline }}"</p>
+                {% endif %}
+            
+                <div class="detail-meta-row">
+                    {% if movie.age_rating %}
+                    <span class="detail-meta-chip">
+                        <i class="fa-solid fa-shield"></i>
+                        {{ movie.age_rating }}
+                    </span>
+                    <span class="detail-divider">·</span>
+                    {% endif %}
+                    <span class="detail-date">
+                        <i class="fa-solid fa-calendar"></i>
+                        {{ movie.release_date | format_date }}
+                    </span>
+                    <span class="detail-divider">·</span>
+                    <span class="detail-genre">
+                        <i class="fa-solid fa-film"></i>
+                        {{ movie.genre_names }}
+                    </span>
+                </div>
+            
+                <div class="detail-rating-big">
+                    <i class="fa-solid fa-star"
+                       style="color:#8B0000;font-size:18px"></i>
+                    <span class="detail-rating-number">
+                        {{ movie.vote_average | round(1) }}
+                    </span>
+                    <span class="detail-rating-label">/ 10</span>
+                </div>
+            
+                <p class="detail-overview">{{ movie.overview }}</p>
+            
+                {% if director %}
+                <div class="detail-director">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Directed by <strong>{{ director }}</strong></span>
+                </div>
+                {% endif %}
+            
+            </div>
+        </div>
+    </div>
+
+    {% if trailers %}
+    <div class="trailer-section">
+        <div class="section-header" style="padding: 0 0 12px 0;">
+            <h2 class="section-title">
+                <i class="fa-brands fa-youtube" style="color:#ff0000"></i>
+                Trailers & Clips
+            </h2>
+        </div>
+        <div class="trailer-cards">
+            {% for trailer in trailers %}
+            <div class="trailer-card"
+                 data-video-id="{{ trailer.key }}"
+                 onclick="openTrailer('{{ trailer.key }}', '{{ trailer.name }}')">
+                <div class="trailer-thumb-wrapper">
+                    <img src="https://img.youtube.com/vi/{{ trailer.key }}/mqdefault.jpg"
+                         alt="{{ trailer.name }}"
+                         class="trailer-thumb">
+                    <div class="trailer-play-icon">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                    <div class="trailer-type-badge">
+                        {{ trailer.type }}
+                    </div>
+                </div>
+                <div class="trailer-card-info">
+                    <div class="trailer-card-title">
+                        {{ trailer.name }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Trailer Modal -->
+    <div class="trailer-modal" id="trailer-modal">
+        <div class="trailer-modal-backdrop"
+             onclick="closeTrailer()"></div>
+        <div class="trailer-modal-content">
+            <button class="trailer-modal-close"
+                    onclick="closeTrailer()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="trailer-modal-title"
+                 id="trailer-modal-title"></div>
+            <div class="trailer-modal-player">
+                <iframe id="trailer-iframe"
+                        src=""
+                        allowfullscreen
+                        allow="autoplay; encrypted-media">
+                </iframe>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="movie-detail-extra">
+        <div class="section-header">
+            <h2 class="section-title">You Might Also Like</h2>
+        </div>
+        <div class="carousel">
+            {% for m in related %}
+            <a href="{{ url_for('main.movie_detail', movie_id=m.id) }}"
+               class="movie-card">
+                <div class="poster-wrapper">
+                    <img src="https://image.tmdb.org/t/p/w300{{ m.poster_path }}"
+                         alt="{{ m.title }}"
+                         class="movie-poster"
+                         onerror="this.src=this.dataset.fallback"
+                         data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                    <div class="rating-badge">{{ m.vote_average | round(1) }}</div>
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">{{ m.title }}</h3>
+                    <p class="card-genre">{{ m.genre_names }}</p>
+                    <p class="card-year">{{ m.release_date }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

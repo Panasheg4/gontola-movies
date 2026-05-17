@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ genre_name }} Movies — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="movie-list-wrapper">
+
+    <div class="movie-list-header">
+        <a href="{{ url_for('main.index') }}"
+           class="detail-back-top">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+        <h1 class="movie-list-title">{{ genre_name }}</h1>
+        <p class="movie-list-count">
+            {{ movies.total }} {{ genre_name }} Movies Available
+        </p>
+        <div class="movie-list-divider"></div>
+    </div>
+
+    {% if movies.items %}
+    <div class="movies-grid">
+        {% for movie in movies.items %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+                     data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">
+                    {{ movie.vote_average | round(1) }}
+                </div>
+                {% if movie.is_upcoming %}
+                <div class="new-badge upcoming-badge">UPCOMING</div>
+                {% elif movie.release_date >= four_weeks_ago %}
+                <div class="new-badge">NEW</div>
+                {% endif %}
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">
+                    {{ movie.release_date | format_date }}
+                </p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if movies.has_prev %}
+        <a href="{{ url_for('main.genre', genre_name=genre_name, page=movies.prev_num) }}"
+           class="page-btn">← Prev</a>
+        {% endif %}
+        {% for num in movies.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if num %}
+                {% if num == movies.page %}
+                <span class="page-btn active">{{ num }}</span>
+                {% else %}
+                <a href="{{ url_for('main.genre', genre_name=genre_name, page=num) }}"
+                   class="page-btn">{{ num }}</a>
+                {% endif %}
+            {% else %}
+            <span class="page-dots">...</span>
+            {% endif %}
+        {% endfor %}
+        {% if movies.has_next %}
+        <a href="{{ url_for('main.genre', genre_name=genre_name, page=movies.next_num) }}"
+           class="page-btn">Next →</a>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="search-empty">
+        <i class="fa-solid fa-film search-empty-icon"></i>
+        <h2>No {{ genre_name }} movies found</h2>
+        <p>Try another genre or check back later</p>
+        <a href="{{ url_for('main.index') }}"
+           class="hero-btn-primary"
+           style="display:inline-block;margin-top:16px">
+            Back to Home
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

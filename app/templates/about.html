@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}About — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="about-wrapper">
+
+    <a href="{{ url_for('main.index') }}"
+       class="detail-back-top">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Home
+    </a>
+
+    <div class="about-hero">
+        <div class="about-hero-text">
+            <h1 class="about-title">About Gontola Movies</h1>
+            <p class="about-tagline">
+                Built with passion for cinema and data.
+            </p>
+        </div>
+    </div>
+
+    <div class="about-grid">
+
+        <div class="about-card">
+            <div class="about-card-icon">
+                <i class="fa-solid fa-clapperboard"></i>
+            </div>
+            <h2 class="about-card-title">The Project</h2>
+            <p class="about-card-text">
+                Gontola Movies was built as a data analytics
+                portfolio project during my CodeAlpha
+                internship. It combines everything I learned —
+                web scraping, exploratory data analysis,
+                data visualisation and full-stack web
+                development — into one real-world application.
+            </p>
+            <p class="about-card-text">
+                The website pulls live movie data from the
+                TMDB API, stores it in a PostgreSQL database,
+                and serves it through a Python Flask
+                web application — deployed on Render.
+            </p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">
+                <i class="fa-brands fa-youtube"
+                   style="color:#ff0000"></i>
+            </div>
+            <h2 class="about-card-title">The Channel</h2>
+            <p class="about-card-text">
+                Gontola Movies started as a YouTube channel
+                built around a genuine love for cinema.
+                From Top 10 rankings to iconic movie scenes
+                and must-watch recommendations — the channel
+                is a space for sharing the joy of movies
+                with people who feel the same way.
+            </p>
+            <p class="about-card-text">
+                This website is the natural extension of
+                that — bringing the channel's content and
+                recommendations into a full movie discovery
+                platform.
+            </p>
+            <a href="https://youtube.com/@Gontolamovies"
+               target="_blank"
+               class="about-yt-btn">
+                <i class="fa-brands fa-youtube"></i>
+                Visit the Channel
+            </a>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">
+                <i class="fa-solid fa-code"></i>
+            </div>
+            <h2 class="about-card-title">Tech Stack</h2>
+            <div class="about-tech-list">
+                <div class="about-tech-item">
+                    <i class="fa-brands fa-python"></i>
+                    Python 3.13
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-solid fa-flask"></i>
+                    Flask
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-solid fa-database"></i>
+                    PostgreSQL (Neon)
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-solid fa-film"></i>
+                    TMDB API
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-brands fa-youtube"></i>
+                    YouTube Data API
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-brands fa-python"></i>
+                    Pandas / Matplotlib
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-solid fa-spider"></i>
+                    BeautifulSoup
+                </div>
+                <div class="about-tech-item">
+                    <i class="fa-brands fa-github"></i>
+                    GitHub
+                </div>
+            </div>
+        </div>
+
+        {% if channel_stats %}
+        <div class="about-card about-stats-card">
+            <div class="about-card-icon">
+                <i class="fa-solid fa-chart-bar"></i>
+            </div>
+            <h2 class="about-card-title">
+                Channel Statistics
+            </h2>
+            <div class="about-stats-grid">
+                <div class="about-stat">
+                    <div class="about-stat-num">
+                        {{ channel_stats.subscribers
+                           | format_number }}
+                    </div>
+                    <div class="about-stat-label">
+                        Subscribers
+                    </div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">
+                        {{ channel_stats.views
+                           | format_number }}
+                    </div>
+                    <div class="about-stat-label">
+                        Total Views
+                    </div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">
+                        {{ channel_stats.videos }}
+                    </div>
+                    <div class="about-stat-label">
+                        Videos Made
+                    </div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">1K+</div>
+                    <div class="about-stat-label">
+                        Movies in Database
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="about-contact">
+        <h2 class="about-contact-title">Get In Touch</h2>
+        <p class="about-contact-text">
+            Have a movie recommendation? Want to
+            collaborate? Found a bug?
+        </p>
+        <div class="about-contact-links">
+            <a href="https://youtube.com/@Gontolamovies"
+               target="_blank"
+               class="about-contact-btn yt">
+                <i class="fa-brands fa-youtube"></i>
+                YouTube
+            </a>
+            <a href="mailto:your@email.com"
+               class="about-contact-btn email">
+                <i class="fa-solid fa-envelope"></i>
+                Email Us
+            </a>
+            <a href="https://github.com/CodeAlpha_DataAnalytics"
+               target="_blank"
+               class="about-contact-btn gh">
+                <i class="fa-brands fa-github"></i>
+                GitHub
+            </a>
+        </div>
+        <p class="about-tmdb-note">
+            This product uses the TMDB API but is not
+            endorsed or certified by TMDB.
+            <a href="https://www.themoviedb.org"
+               target="_blank">themoviedb.org</a>
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

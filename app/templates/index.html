@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Gontola Movies — Home{% endblock %}
+
+{% block content %}
+
+<section class="hero-banner" id="hero-banner" data-rotation-interval="7000">
+    {% if hero_candidates %}
+    <div class="hero-slides">
+        {% for movie in hero_candidates %}
+        <article class="hero-slide{% if loop.first %} active{% endif %}"
+                 style="background-image: url('https://image.tmdb.org/t/p/original{{ movie.backdrop_path }}');">
+            <div class="hero-gradient"></div>
+            <div class="hero-overlay">
+                <div class="hero-content-wrapper">
+                    <div class="hero-poster-side">
+                        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                             alt="{{ movie.title }}"
+                             class="hero-poster-img"
+                             onerror="this.src=this.dataset.fallback"
+                             data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                    </div>
+                    <div class="hero-text-side">
+                        <h1 class="hero-title">
+                            {{ movie.title }}
+                            {% if movie.release_date %}
+                            <span class="hero-title-year">
+                                ({{ movie.release_date[:4] }})
+                            </span>
+                            {% endif %}
+                        </h1>
+                        <p class="hero-meta">{{ movie.genre_names }}</p>
+                        <p class="hero-tagline">
+                            {{ (movie.overview or '')[:200] }}{% if movie.overview and movie.overview|length > 200 %}...{% endif %}
+                        </p>
+                        <div class="hero-bottom-row">
+                            <div class="hero-rating-inline">
+                                <span class="hero-rating-number">
+                                    {{ movie.vote_average | round(1) }}
+                                </span>
+                                <span class="hero-rating-label">/ 10</span>
+                            </div>
+                            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+                               class="hero-btn-primary">More Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% if hero_candidates|length > 1 %}
+    <div class="hero-controls">
+        <div class="hero-dots">
+            {% for movie in hero_candidates %}
+            <button class="hero-dot{% if loop.first %} active{% endif %}"
+                    type="button"
+                    data-index="{{ loop.index0 }}"
+                    aria-label="Slide {{ loop.index }}"></button>
+            {% endfor %}
+        </div>
+    </div>
+    <button class="hero-arrow hero-arrow-left" type="button" aria-label="Previous slide">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button class="hero-arrow hero-arrow-right" type="button" aria-label="Next slide">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    {% endif %}
+    {% else %}
+    <div class="hero-fallback">
+        <img src="{{ url_for('static', filename='images/banner.jpg') }}"
+             alt="Gontola Movies Banner"
+             class="hero-bg-image">
+        <div class="hero-gradient"></div>
+        <div class="hero-overlay">
+            <div class="hero-content-wrapper">
+                <div>
+                    <div class="hero-tag">Welcome</div>
+                    <h1 class="hero-title">Gontola Movies</h1>
+                    <p class="hero-tagline">Your home for everything movies.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<section class="carousel-section" id="shorts">
+    <div class="section-header">
+        <h2 class="section-title">YouTube Shorts</h2>
+        <a href="{{ url_for('main.shorts_page') }}"
+           class="section-see-all">
+            View More
+        </a>
+    </div>
+
+    {% if shorts %}
+    <div class="carousel">
+        {% for short in shorts %}
+        <a href="{{ short.url }}"
+           target="_blank"
+           class="short-card">
+            <div class="short-thumbnail">
+                <img src="{{ short.thumbnail }}"
+                     alt="{{ short.title }}"
+                     class="short-thumb-img">
+                <div class="short-play-btn">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                {% if loop.index == 1 %}
+                <div class="short-new-badge">NEW</div>
+                {% endif %}
+            </div>
+            <div class="short-info">
+                <div class="short-title">{{ short.title }}</div>
+                <div class="short-views">{{ short.published }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="shorts-placeholder">
+        <a href="https://youtube.com/@Gontolamovies"
+           target="_blank"
+           class="shorts-yt-link">
+            <i class="fa-brands fa-youtube"></i>
+            Visit @Gontolamovies on YouTube
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="carousel-section" id="recommended">
+    <div class="section-header">
+        <h2 class="section-title">Recommended For You</h2>
+        <a href="{{ url_for('main.recommended_movies') }}"
+       class="section-see-all">View More</a>
+    </div>
+    {% if recommended %}
+    <div class="carousel">
+        {% for movie in recommended %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+                     data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">{{ movie.vote_average | round(1) }}</div>
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">{{ movie.release_date | format_date }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-movies">No recommendations right now.</p>
+    {% endif %}
+</section>
+
+<section class="carousel-section" id="latest">
+    <div class="section-header">
+        <h2 class="section-title">Latest Movies</h2>
+        <a href="{{ url_for('main.latest_movies') }}"
+            class="section-see-all">View More</a>
+    </div>
+    {% if latest %}
+    <div class="carousel">
+        {% for movie in latest %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">{{ movie.vote_average | round(1) }}</div>
+                <div class="new-badge">NEW</div>
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">{{ movie.release_date | format_date }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-movies">No latest movies right now.</p>
+    {% endif %}
+</section>
+
+<section class="carousel-section" id="upcoming">
+    <div class="section-header">
+        <h2 class="section-title">Upcoming Movies</h2>
+        <a href="{{ url_for('main.upcoming_movies') }}"
+            class="section-see-all">View More</a>
+    </div>
+    {% if upcoming %}
+    <div class="carousel">
+        {% for movie in upcoming %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">{{ movie.vote_average | round(1) }}</div>
+                <div class="new-badge upcoming-badge">UPCOMING</div>
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">Coming {{ movie.release_date | format_date }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-movies">No upcoming movies right now.</p>
+    {% endif %}
+</section>
+
+<section class="browse-section" id="browse">
+    <div class="section-header">
+        <h2 class="section-title">Browse All Movies</h2>
+    </div>
+    <div class="movies-grid">
+        {% for movie in all_movies.items %}
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+           class="movie-card">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}"
+                     alt="{{ movie.title }}"
+                     class="movie-poster"
+                     onerror="this.src=this.dataset.fallback"
+                     data-fallback="{{ url_for('static', filename='images/no-poster.png') }}">
+                <div class="rating-badge">{{ movie.vote_average | round(1) }}</div>
+                {% if movie.release_date >= four_weeks_ago %}
+                <div class="new-badge">NEW</div>
+                {% endif %}
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{ movie.title }}</h3>
+                <p class="card-genre">{{ movie.genre_names }}</p>
+                <p class="card-year">{{ movie.release_date | format_date }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if all_movies.has_prev %}
+        <a href="{{ url_for('main.index', page=all_movies.prev_num) }}#browse"
+           class="page-btn">← Prev</a>
+        {% endif %}
+
+        {% for num in all_movies.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if num %}
+                {% if num == all_movies.page %}
+                <span class="page-btn active">{{ num }}</span>
+                {% else %}
+                <a href="{{ url_for('main.index', page=num) }}#browse"
+                   class="page-btn">{{ num }}</a>
+                {% endif %}
+            {% else %}
+            <span class="page-dots">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if all_movies.has_next %}
+        <a href="{{ url_for('main.index', page=all_movies.next_num) }}#browse"
+           class="page-btn">Next →</a>
+        {% endif %}
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}All Movies — Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-header">
+    <h1 class="admin-page-title">All Movies
+        <span class="admin-total-badge">
+            {{ movies.total }} total
+        </span>
+    </h1>
+    <div style="display:flex;gap:10px;">
+        <button class="admin-danger-btn"
+                id="bulk-delete-btn"
+                style="display:none"
+                onclick="bulkDelete()">
+            <i class="fa-solid fa-trash"></i>
+            Delete Selected
+        </button>
+        <a href="{{ url_for('admin.add_movie') }}"
+           class="admin-primary-btn">
+            <i class="fa-solid fa-plus"></i> Add Movie
+        </a>
+    </div>
+</div>
+
+<form method="GET"
+      action="{{ url_for('admin.movies') }}"
+      class="admin-filter-form">
+    <div class="admin-filter-bar">
+        <div class="admin-filter-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text"
+                   name="q"
+                   id="admin-search-input"
+                   value="{{ query }}"
+                   placeholder="Search movies..."
+                   autocomplete="off">
+        </div>
+        <select name="status" class="admin-filter-select">
+            <option value="">All Status</option>
+            <option value="released"
+                {% if status == 'released' %}selected{% endif %}>
+                Released
+            </option>
+            <option value="upcoming"
+                {% if status == 'upcoming' %}selected{% endif %}>
+                Upcoming
+            </option>
+            <option value="latest"
+                {% if status == 'latest' %}selected{% endif %}>
+                Latest (5 months)
+            </option>
+        </select>
+        <select name="genre" class="admin-filter-select">
+            <option value="">All Genres</option>
+            <option value="True stories"
+                {% if genre == 'True stories' %}selected{% endif %}>
+                True Stories
+            </option>
+            {% for g in genre_choices %}
+            <option value="{{ g }}"
+                {% if genre == g %}selected{% endif %}>
+                {{ g }}
+            </option>
+            {% endfor %}
+        </select>
+        <input type="date"
+               name="from_date"
+               value="{{ from_date }}"
+               class="admin-filter-date"
+               placeholder="From date">
+        <input type="date"
+               name="to_date"
+               value="{{ to_date }}"
+               class="admin-filter-date"
+               placeholder="To date">
+        <button type="submit" class="admin-primary-btn">
+            <i class="fa-solid fa-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('admin.movies') }}"
+           class="admin-clear-btn">
+            <i class="fa-solid fa-xmark"></i>
+        </a>
+    </div>
+    <div id="admin-search-dropdown"
+         class="admin-search-dropdown"></div>
+</form>
+
+{% if movies.total == 0 %}
+<div class="admin-empty">
+    <i class="fa-solid fa-film"></i>
+    <h3>No movies found</h3>
+    <p>Try adjusting your search or filters</p>
+    <a href="{{ url_for('admin.movies') }}"
+       class="admin-primary-btn" style="margin-top:12px">
+        Clear filters
+    </a>
+</div>
+{% else %}
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width:40px">
+                    <input type="checkbox"
+                           id="select-all"
+                           onchange="toggleSelectAll(this)">
+                </th>
+                <th>Poster</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Rating</th>
+                <th>Release</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="movies-table-body">
+            {% for movie in movies.items %}
+            <tr id="row-{{ movie.id }}">
+                <td>
+                    <input type="checkbox"
+                           class="movie-select"
+                           value="{{ movie.id }}"
+                           onchange="updateBulkBtn()">
+                </td>
+                <td>
+                    <img src="https://image.tmdb.org/t/p/w92{{ movie.poster_path }}"
+                         alt="{{ movie.title }}"
+                         class="admin-movie-thumb">
+                </td>
+                <td class="admin-movie-title">
+                    {{ movie.title }}
+                </td>
+                <td class="admin-movie-genre">
+                    {{ movie.genre_names }}
+                </td>
+                <td>
+                    <span class="admin-rating">
+                        ⭐ {{ movie.vote_average | round(1) }}
+                    </span>
+                </td>
+                <td class="admin-date">
+                    {{ movie.release_date | format_date }}
+                </td>
+                <td>
+                    {% if movie.is_upcoming %}
+                    <span class="admin-badge upcoming">
+                        Upcoming
+                    </span>
+                    {% elif movie.is_true_story %}
+                    <span class="admin-badge true-story">
+                        True Story
+                    </span>
+                    {% else %}
+                    <span class="admin-badge released">
+                        Released
+                    </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="admin-actions">
+                        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+                           target="_blank"
+                           class="admin-action-btn view-btn"
+                           title="View on website">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <button onclick="deleteMovie({{ movie.id }}, this)" data-title="{{ movie.title }}"
+                                class="admin-action-btn delete-btn"
+                                title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    {% if movies.has_prev %}
+    <a href="{{ url_for('admin.movies', page=movies.prev_num, q=query, status=status, genre=genre) }}"
+       class="page-btn">← Prev</a>
+    {% endif %}
+    {% for num in movies.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if num %}
+            {% if num == movies.page %}
+            <span class="page-btn active">{{ num }}</span>
+            {% else %}
+            <a href="{{ url_for('admin.movies', page=num, q=query, status=status, genre=genre) }}"
+               class="page-btn">{{ num }}</a>
+            {% endif %}
+        {% else %}
+        <span class="page-dots">...</span>
+        {% endif %}
+    {% endfor %}
+    {% if movies.has_next %}
+    <a href="{{ url_for('admin.movies', page=movies.next_num, q=query, status=status, genre=genre) }}"
+       class="page-btn">Next →</a>
+    {% endif %}
+</div>
+
+{% endif %}
+
+<script>
+function deleteMovie(id, btn) {
+    const title = btn.getAttribute('data-title') || 'this movie';
+    if (!confirm(`Delete "${title}"?\nThis will permanently block it from being re-added.`)) return;
+    
+    fetch(`/admin/delete/${id}`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const row = document.getElementById(`row-${id}`);
+                if (row) {
+                    row.style.opacity = '0';
+                    row.style.transition = 'opacity 0.3s';
+                    setTimeout(() => row.remove(), 300);
+                }
+            }
+        })
+        .catch(err => console.error('Delete error:', err));
+}
+
+function toggleSelectAll(checkbox) {
+    document.querySelectorAll('.movie-select').forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+    updateBulkBtn();
+}
+
+function updateBulkBtn() {
+    const selected = document.querySelectorAll(
+        '.movie-select:checked'
+    ).length;
+    const btn = document.getElementById('bulk-delete-btn');
+    if (btn) {
+        btn.style.display = selected > 0 ? 'flex' : 'none';
+        btn.textContent = `Delete ${selected} selected`;
+    }
+}
+
+function bulkDelete() {
+    const ids = Array.from(
+        document.querySelectorAll('.movie-select:checked')
+    ).map(cb => parseInt(cb.value));
+
+    if (ids.length === 0) return;
+    if (!confirm(`Delete ${ids.length} movies? This cannot be undone.`)) return;
+
+    fetch('/admin/bulk-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            ids.forEach(id => {
+                const row = document.getElementById(`row-${id}`);
+                if (row) row.remove();
+            });
+            document.getElementById('bulk-delete-btn')
+                .style.display = 'none';
+            document.getElementById('select-all').checked = false;
+        }
+    });
+}
+</script>
+
+{% endblock %}

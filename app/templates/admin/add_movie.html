@@ -1,0 +1,200 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Add Movie — Admin{% endblock %}
+{% block content %}
+
+{% if not preview %}
+
+<div class="addmovie-page">
+
+    <div class="addmovie-header">
+        <h1 class="admin-page-title">Add Movie</h1>
+        <p class="addmovie-subtitle">
+            Search TMDB for any movie and preview 
+            it before adding to your database.
+        </p>
+    </div>
+
+    {% if error %}
+    <div class="admin-flash-error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST"
+          action="{{ url_for('admin.preview_movie') }}"
+          class="addmovie-form">
+
+        <div class="addmovie-input-card">
+            <div class="addmovie-input-label">
+                <i class="fa-solid fa-hashtag"></i>
+                TMDB Movie ID
+            </div>
+            <div class="addmovie-input-row">
+                <input type="text"
+                       name="tmdb_id"
+                       placeholder="e.g. 155"
+                       class="addmovie-input"
+                       required
+                       autofocus
+                       inputmode="numeric"
+                       pattern="[0-9]*">
+                <button type="submit" class="addmovie-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Preview Movie
+                </button>
+            </div>
+            <div class="addmovie-hint">
+                <i class="fa-solid fa-circle-info"></i>
+                Go to
+                <a href="https://www.themoviedb.org"
+                   target="_blank">themoviedb.org</a>,
+                find a movie and copy the number from
+                the URL. Example:
+                themoviedb.org/movie/<strong>155</strong>
+                → ID is <strong>155</strong>
+            </div>
+        </div>
+
+        <div class="addmovie-tips-grid">
+            <div class="addmovie-tip-card">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div class="addmovie-tip-title">
+                    Content Checked
+                </div>
+                <div class="addmovie-tip-desc">
+                    Blocked genres and adult content
+                    are automatically filtered
+                </div>
+            </div>
+            <div class="addmovie-tip-card">
+                <i class="fa-solid fa-eye"></i>
+                <div class="addmovie-tip-title">
+                    Preview First
+                </div>
+                <div class="addmovie-tip-desc">
+                    See full movie details before
+                    confirming to avoid mistakes
+                </div>
+            </div>
+            <div class="addmovie-tip-card">
+                <i class="fa-solid fa-bolt"></i>
+                <div class="addmovie-tip-title">
+                    Instant Add
+                </div>
+                <div class="addmovie-tip-desc">
+                    Movie appears on your website
+                    immediately after confirming
+                </div>
+            </div>
+            <div class="addmovie-tip-card">
+                <i class="fa-solid fa-rotate"></i>
+                <div class="addmovie-tip-title">
+                    No Duplicates
+                </div>
+                <div class="addmovie-tip-desc">
+                    Already existing movies are
+                    detected and skipped safely
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% else %}
+
+<div class="admin-page-header">
+    <h1 class="admin-page-title">Confirm Movie</h1>
+    <a href="{{ url_for('admin.add_movie') }}"
+       class="admin-deny-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        Search Again
+    </a>
+</div>
+
+<div class="admin-preview-wrapper">
+    <div class="admin-preview-poster">
+        <img src="https://image.tmdb.org/t/p/w400{{ preview.poster_path }}"
+             alt="{{ preview.title }}"
+             class="admin-preview-img">
+    </div>
+
+    <div class="admin-preview-info">
+        <div class="admin-preview-tag">
+            <i class="fa-solid fa-eye"></i>
+            Preview — Not saved yet
+        </div>
+
+        <h1 class="admin-preview-title">
+            {{ preview.title }}
+        </h1>
+
+        {% if preview.tagline %}
+        <p class="admin-preview-tagline">
+            "{{ preview.tagline }}"
+        </p>
+        {% endif %}
+
+        <div class="admin-preview-meta">
+            <span>
+                <i class="fa-solid fa-star"></i>
+                {{ preview.vote_average | round(1) }} / 10
+            </span>
+            <span>
+                <i class="fa-solid fa-users"></i>
+                {{ preview.vote_count }} votes
+            </span>
+            <span>
+                <i class="fa-solid fa-calendar"></i>
+                {{ preview.release_date }}
+            </span>
+            {% if preview.runtime %}
+            <span>
+                <i class="fa-solid fa-clock"></i>
+                {{ preview.runtime }} min
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="admin-preview-genres">
+            {% for genre in preview.genre_names.split(', ') %}
+            <span class="admin-genre-tag">{{ genre }}</span>
+            {% endfor %}
+        </div>
+
+        <p class="admin-preview-overview">
+            {{ preview.overview }}
+        </p>
+
+        {% if preview.adult %}
+        <div class="admin-flash-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            This movie is flagged as adult content on TMDB.
+        </div>
+        {% endif %}
+
+        <div class="admin-preview-actions">
+            <form method="POST"
+                  action="{{ url_for('admin.confirm_add') }}">
+                <input type="hidden"
+                       name="tmdb_id"
+                       value="{{ preview.id }}">
+                <button type="submit" class="admin-confirm-btn">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Add to Database
+                </button>
+            </form>
+            <a href="{{ url_for('admin.add_movie') }}"
+               class="admin-deny-btn">
+                <i class="fa-solid fa-xmark"></i>
+                Cancel
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

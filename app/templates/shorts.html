@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Shorts — Gontola Movies{% endblock %}
+
+{% block content %}
+
+<div class="shorts-page-wrapper">
+
+    <div class="shorts-page-header">
+        <a href="{{ url_for('main.index') }}"
+           class="detail-back-top">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="shorts-channel-info">
+            <div class="shorts-channel-text">
+                <h1 class="shorts-page-title">
+                    <i class="fa-brands fa-youtube"
+                       style="color:#ff0000"></i>
+                    YouTube Shorts
+                </h1>
+
+            </div>
+
+            {% if channel_stats %}
+            <div class="shorts-stats">
+                <div class="shorts-stat">
+                    <div class="shorts-stat-num">
+                        {{ channel_stats.subscribers
+                           | format_number }}
+                    </div>
+                    <div class="shorts-stat-label">
+                        Subscribers
+                    </div>
+                </div>
+                <div class="shorts-stat">
+                    <div class="shorts-stat-num">
+                        {{ channel_stats.views
+                           | format_number }}
+                    </div>
+                    <div class="shorts-stat-label">
+                        Total Views
+                    </div>
+                </div>
+                <div class="shorts-stat">
+                    <div class="shorts-stat-num">
+                        {{ channel_stats.videos }}
+                    </div>
+                    <div class="shorts-stat-label">
+                        Videos
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <a href="https://youtube.com/@Gontolamovies"
+               target="_blank"
+               class="shorts-subscribe-btn">
+                <i class="fa-brands fa-youtube"></i>
+                Subscribe
+            </a>
+        </div>
+
+        <div class="movie-list-divider"></div>
+    </div>
+
+    {% if shorts %}
+    <div class="shorts-grid">
+        {% for short in shorts %}
+        <a href="{{ short.url }}"
+           target="_blank"
+           class="shorts-card">
+            <div class="shorts-card-thumb">
+                <img src="{{ short.thumbnail }}"
+                     alt="{{ short.title }}"
+                     class="shorts-card-img">
+                <div class="shorts-card-play">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                {% if loop.index == 1 %}
+                <div class="new-badge">NEW</div>
+                {% endif %}
+            </div>
+            <div class="shorts-card-info">
+                <div class="shorts-card-title">
+                    {{ short.title }}
+                </div>
+                <div class="shorts-card-date">
+                    {{ short.published }}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="search-empty">
+        <i class="fa-brands fa-youtube search-empty-icon"
+           style="color:#ff0000"></i>
+        <h2>No shorts found right now</h2>
+        <p>Visit the channel directly on YouTube</p>
+        <a href="https://youtube.com/@Gontolamovies"
+           target="_blank"
+           class="shorts-subscribe-btn"
+           style="display:inline-flex;margin-top:16px">
+            <i class="fa-brands fa-youtube"></i>
+            @Gontolamovies
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

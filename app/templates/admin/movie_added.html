@@ -1,0 +1,56 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Movie Added — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-add-full">
+    <div class="admin-preview-wrapper">
+        <div class="admin-preview-poster">
+            <img src="https://image.tmdb.org/t/p/w400{{ movie.poster_path }}"
+                 alt="{{ movie.title }}"
+                 class="admin-preview-img">
+        </div>
+        <div class="admin-preview-info">
+            <div class="admin-flash-success" style="margin-bottom:20px">
+                <i class="fa-solid fa-circle-check"></i>
+                Successfully added to your database!
+            </div>
+            <h1 class="admin-preview-title">{{ movie.title }}</h1>
+            <div class="admin-preview-meta">
+                <span>
+                    <i class="fa-solid fa-star"></i>
+                    {{ movie.vote_average | round(1) }}
+                </span>
+                <span>
+                    <i class="fa-solid fa-calendar"></i>
+                    {{ movie.release_date }}
+                </span>
+            </div>
+            <div class="admin-preview-genres">
+                {% for genre in movie.genre_names.split(', ') %}
+                <span class="admin-genre-tag">{{ genre }}</span>
+                {% endfor %}
+            </div>
+            <p class="admin-preview-overview">{{ movie.overview }}</p>
+            <div class="admin-preview-actions">
+                <a href="{{ url_for('admin.add_movie') }}"
+                   class="admin-confirm-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Another Movie
+                </a>
+                <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+                   target="_blank"
+                   class="admin-view-btn-outline">
+                    <i class="fa-solid fa-eye"></i>
+                    View on Website
+                </a>
+                <a href="{{ url_for('admin.movies') }}"
+                   class="admin-deny-btn">
+                    <i class="fa-solid fa-list"></i>
+                    All Movies
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

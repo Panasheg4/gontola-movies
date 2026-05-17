@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Blocklist — Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-header">
+    <h1 class="admin-page-title">
+        Blocklist
+        <span class="admin-total-badge">
+            {{ blocked|length }} entries
+        </span>
+    </h1>
+</div>
+
+<p style="font-size:13px;color:#4a6070;margin-bottom:20px;">
+    Movies on this list are permanently excluded from the
+    database. They will never be re-added by the scheduler
+    or by user searches.
+</p>
+
+{% if blocked %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>TMDB ID</th>
+                <th>Title</th>
+                <th>Reason</th>
+                <th>Blocked On</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in blocked %}
+            <tr>
+                <td style="color:#4a6070">{{ b.tmdb_id }}</td>
+                <td class="admin-movie-title">{{ b.title }}</td>
+                <td style="font-size:12px;color:#4a6070">
+                    {{ b.reason }}
+                </td>
+                <td class="admin-date">{{ b.blocked_at }}</td>
+                <td>
+                    <a href="{{ url_for('admin.unblock_movie', tmdb_id=b.tmdb_id) }}"
+                       class="admin-action-btn view-btn"
+                       title="Remove from blocklist"
+                       onclick="return confirm('Unblock {{ b.title }}? It may be re-added by the scheduler.')">
+                        <i class="fa-solid fa-unlock"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="admin-empty">
+    <i class="fa-solid fa-shield-halved"></i>
+    <h3>Blocklist is empty</h3>
+    <p>Movies you delete will appear here automatically</p>
+</div>
+{% endif %}
+
+{% endblock %}

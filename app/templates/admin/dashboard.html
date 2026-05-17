@@ -1,0 +1,99 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard — Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-header">
+    <h1 class="admin-page-title">Dashboard</h1>
+    <p class="admin-page-sub">Welcome back, Gontola!</p>
+</div>
+
+<div class="admin-stats-grid">
+    <div class="admin-stat-card">
+        <i class="fa-solid fa-film admin-stat-icon"></i>
+        <div class="admin-stat-num">{{ total }}</div>
+        <div class="admin-stat-label">Total Movies</div>
+    </div>
+    <div class="admin-stat-card">
+        <i class="fa-solid fa-calendar-days admin-stat-icon"></i>
+        <div class="admin-stat-num">{{ upcoming }}</div>
+        <div class="admin-stat-label">Upcoming</div>
+    </div>
+    <div class="admin-stat-card">
+        <i class="fa-solid fa-circle-check admin-stat-icon"></i>
+        <div class="admin-stat-num">{{ released }}</div>
+        <div class="admin-stat-label">Released</div>
+    </div>
+</div>
+
+<div class="admin-section">
+    <div class="admin-section-header">
+        <h2 class="admin-section-title">Recently Added</h2>
+        <a href="{{ url_for('admin.movies') }}" class="admin-see-all">
+            View all →
+        </a>
+    </div>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Poster</th>
+                    <th>Title</th>
+                    <th>Genre</th>
+                    <th>Rating</th>
+                    <th>Release</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in recent %}
+                <tr>
+                    <td>
+                        <img src="https://image.tmdb.org/t/p/w92{{ movie.poster_path }}"
+                             alt="{{ movie.title }}"
+                             class="admin-movie-thumb">
+                    </td>
+                    <td class="admin-movie-title">{{ movie.title }}</td>
+                    <td class="admin-movie-genre">{{ movie.genre_names }}</td>
+                    <td>
+                        <span class="admin-rating">
+                            ⭐ {{ movie.vote_average | round(1) }}
+                        </span>
+                    </td>
+                    <td class="admin-date">{{ movie.release_date }}</td>
+                    <td>
+                        {% if movie.is_upcoming %}
+                        <span class="admin-badge upcoming">Upcoming</span>
+                        {% elif movie.is_trending %}
+                        <span class="admin-badge trending">Trending</span>
+                        {% else %}
+                        <span class="admin-badge released">Released</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="admin-actions">
+
+                            <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}"
+                               target="_blank"
+                               class="admin-action-btn view-btn"
+                               title="View on website">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin.delete_movie', movie_id=movie.id) }}"
+                               class="admin-action-btn delete-btn"
+                               title="Delete"
+                               onclick="return confirm('Delete {{ movie.title }}?')">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

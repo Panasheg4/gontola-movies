@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — Gontola Movies</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="admin-login-wrapper">
+    <div class="admin-login-box">
+
+        <div class="admin-login-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="Gontola Movies"
+                 class="admin-logo-img">
+            <h1 class="admin-login-title">Gontola <span>Movies</span></h1>
+            <p class="admin-login-sub">Admin Panel</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="admin-flash-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="admin-login-form">
+            <div class="admin-input-group">
+                <i class="fa-solid fa-lock admin-input-icon"></i>
+                <input type="password"
+                       name="password"
+                       placeholder="Enter admin password"
+                       class="admin-input"
+                       autofocus
+                       required>
+            </div>
+            <button type="submit" class="admin-login-btn">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Login
+            </button>
+        </form>
+
+        <a href="{{ url_for('main.index') }}" class="admin-back-link">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to website
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>
